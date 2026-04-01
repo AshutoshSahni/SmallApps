@@ -1,0 +1,8 @@
+.navbar {
+    /* border: 1px solid var(--pallete-color-3); */
+    text-align: center;
+    height: 10dvh;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}

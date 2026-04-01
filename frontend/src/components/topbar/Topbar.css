@@ -1,0 +1,5 @@
+.topbar {
+    display: flex;
+    height: 6dvh;
+    border: 1px solid var(--pallete-color-3);
+}

@@ -1,0 +1,9 @@
+.small-app {
+    display: flex;
+    flex-direction: column;
+}
+
+.current-app {
+    display: flex;
+    height: 84dvh;
+}
