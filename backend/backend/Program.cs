@@ -27,6 +27,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 // Middleware
 if (app.Environment.IsDevelopment())
 {
@@ -36,6 +37,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
+app.Urls.Add("http://0.0.0.0:5249");
 
 app.MapGet("/", context =>
 {

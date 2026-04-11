@@ -16,11 +16,10 @@ export default function Button({ label, styles, onClick, isActive }: ButtonProps
             active:font-bold`;
 
     return (
-        <button className={`
+        <button type="button" className={`
             px-4 py-2
             rounded-sm
             shadow-normal
-            dark:[var(--pallete-color-5)]
             dark:shadow-glow
             hover:bg-(--pallete-color-1)
             hover:text-(--pallete-color-5)

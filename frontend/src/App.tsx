@@ -18,7 +18,7 @@ const App = () => {
     <div className="small-app">
       <Topbar currentApp={currentApp} />
 
-      <div className="flex flex-row w-screen h-[84dvh] justify-center items-center">
+      <div className="flex flex-row w-screen h-[84dvh] justify-center items-center overflow-scroll">
         {appComponents[currentApp]}
       </div>
 
