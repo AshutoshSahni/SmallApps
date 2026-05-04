@@ -1,16 +1,24 @@
-import Button from '../ui/Button'
 import './Navbar.css'
+import {
+  CalculatorIcon as CalculatorIconOutline,
+  PencilSquareIcon as PencilSquareIconOutline,
+} from '@heroicons/react/24/outline'
+import { 
+  CalculatorIcon as CalculatorIconSolid,
+  PencilSquareIcon as PencilSquareIconSolid
+} from '@heroicons/react/24/solid'
 
 type Props = {
   setCurrentApp: (app: 'notes' | 'calculator') => void,
-  currentApp: string  
+  currentApp: string
 }
 
 const Navbar = ({ setCurrentApp, currentApp }: Props) => {
   return (
     <div className='navbar'>
-      <Button label="Notes" styles={currentApp === 'notes' ? 'font-bold bg-black text-white' : ''} onClick={() => setCurrentApp('notes')} />
-      <Button label="Calculator" styles={currentApp === 'calculator' ? 'font-bold bg-black text-white' : ''} onClick={() => setCurrentApp('calculator')} />
+      {currentApp === 'calculator' ? <CalculatorIconSolid className={'w-10 h-10'} /> : <CalculatorIconOutline className={'w-10 h-10'} onClick={() => setCurrentApp('calculator')} />}
+      {currentApp === 'notes' ? <PencilSquareIconSolid className={'w-10 h-10'} /> : <PencilSquareIconOutline className={'w-10 h-10'} onClick={() => setCurrentApp('notes')} />}
+    
     </div>
   )
 }

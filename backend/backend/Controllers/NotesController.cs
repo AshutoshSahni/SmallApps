@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,7 @@ public class NotesController : ControllerBase
     }
 
     // GET: api/notes/5
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<Note>> GetNote(int id)
     {

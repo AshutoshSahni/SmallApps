@@ -12,11 +12,10 @@ import {
   PencilSquareIcon as PencilSolid,
   CheckCircleIcon as CheckCircleSolid
 } from "@heroicons/react/16/solid";
+import { createNote, getNotes, deleteNote, updateNote } from "../../services/NotesService";
 
 
-const BASE_URL = import.meta.env.VITE_API_URL;
-
-interface Notes {
+interface Note {
   id: number
   title: string
   content: string
@@ -25,23 +24,27 @@ interface Notes {
 
 
 const NotesApp = () => {
-  const [notes, setNotes] = useState<Notes[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [note, setNote] = useState({ title: '', content: '' });
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate fetching notes from a database
     const fetchNotes = async () => {
-      const response = await fetch(BASE_URL);
-      const data = await response.json();
-      setNotes(data);
-    };
 
+      try {
+        const data = await getNotes();
+        setNotes(data);
+      } catch (error) {
+        console.error(error);
+        setError("Something went wrong while fetching notes." + (error instanceof Error ? `: ${error.message}` : ''));
+      }
+    };
     fetchNotes();
   }, []);
 
   // Create note
-  const createNote = async () => {
+  const handleCreateNote = async () => {
     // Validate input 
     if (!note.title.trim()) {
       alert("Title is required.");
@@ -53,39 +56,30 @@ const NotesApp = () => {
       content: note.content,
     };
 
-    const response = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newNote)
-    });
-
-    if (response.ok) {
-      const createdNote = await response.json();
+    try {
+      const createdNote = await createNote(newNote);
       setNotes([...notes, createdNote]);
       setNote({ title: '', content: '' });
-    } else {
-      console.error('Failed to create note');
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong while creating the note." + (error instanceof Error ? `: ${error.message}` : ''));
     }
   }
 
   // Delete note
-  const deleteNote = async (id: number) => {
-
+  const handleDeleteNote = async (id: number) => {
     //confirm delete
     if (!confirm('Are you sure you want to delete this note?')) {
       return;
     }
 
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'DELETE'
-    });
-
-    if (response.ok) {
+    try {
+      await deleteNote(id);
       setNotes(notes.filter(note => note.id !== id));
-    } else {
-      console.error('Failed to delete note');
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong while deleting the note." + (error instanceof Error ? `: ${error.message}` : ''));
+      return;
     }
   }
 
@@ -96,27 +90,15 @@ const NotesApp = () => {
 
   const handleSave = async (id: number) => {
     try {
-      const response = await fetch(`${BASE_URL}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(notes.find(note => note.id === id))
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save note");
-      }
-
+      await updateNote(id, notes.find(note => note.id === id) as { title: string, content: string });
       setEditingId(null);
-
     } catch (error) {
       console.error(error);
-      alert("Something went wrong while saving");
+      alert("Something went wrong while updating the note." + (error instanceof Error ? `: ${error.message}` : ''));
     }
   };
 
-  const handleChange = (id: number, field: string, value: string) => {
+  const handleChange = (id: number, field: keyof Note, value: string) => {
     setNotes(prev =>
       prev.map(note =>
         note.id === id ? { ...note, [field]: value } : note
@@ -129,7 +111,7 @@ const NotesApp = () => {
 
       {/* Create new note form  */}
       <div className="flex items-center justify-center pb-5">
-        <form className="flex flex-col gap-1 rounded-sm w-[80%] md:w-1/4" onSubmit={(e) => { e.preventDefault(); createNote(); }}>
+        <form className="flex flex-col gap-1 rounded-sm w-[80%] md:w-1/4" onSubmit={(e) => { e.preventDefault(); handleCreateNote(); }}>
           <Input value={note.title} placeholder="Title" styles="border border-gray-300 p-2" onChange={(e) => setNote({ ...note, title: e.target.value })} />
           <textarea
             value={note.content}
@@ -144,7 +126,7 @@ const NotesApp = () => {
               text-[var(--pallete-color-5)]
               dark:bg-[var(--pallete-color-5)] 
               dark:text-[var(--pallete-color-1)]"
-            onClick={() => createNote()}
+            onClick={() => handleCreateNote()}
             disabled={!note.title.trim()}
           />
         </form>
@@ -191,7 +173,7 @@ const NotesApp = () => {
                   <TrashOutline className="w-6 h-6 text-(--pallete-color-1) group-hover:hidden" />
                   <TrashSolid
                     className="w-6 h-6 text-(--pallete-color-1) hidden group-hover:block"
-                    onClick={() => deleteNote(note.id)}
+                    onClick={() => handleDeleteNote(note.id)}
                   />
                 </div>
 
