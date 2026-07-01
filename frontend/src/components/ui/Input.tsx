@@ -1,19 +1,23 @@
 type Props = {
+    type?: string,
     styles?: string,
     value?: string
     readOnly?: boolean
-    placeholder?: string
+    placeholder?: string,
+    required?: boolean
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export default function Input({ styles, value, readOnly, placeholder, onChange }: Props) {
+export default function Input({ type, styles, value, readOnly, placeholder, required, onChange }: Props) {
     return (
         <input
-            className={styles}
+            type={type}
+            className={`w-full rounded-sm px-2 py-3 ${styles}`}
             value={value}
             readOnly={readOnly}
             placeholder={placeholder}
             onChange={onChange}
+            required={required}
         />
     )
 }

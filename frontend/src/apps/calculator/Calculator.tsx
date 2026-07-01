@@ -128,7 +128,7 @@ const Calculator = () => {
   return (
     <>
       <div className="grid grid-cols-4 gap-4">
-        <Input styles="col-span-4 px-4 py-2 shadow-normal dark:shadow-glow transition-colors duration-400 ease-in-out" value={expression} readonly />
+        <Input styles="col-span-4 px-4 py-2 shadow-normal dark:shadow-glow transition-colors duration-400 ease-in-out" value={expression} />
 
         <Button label="AC" onClick={() => handleInput("AC")} styles="font-bold" isActive={activeKey === "AC"} />
         <Button label="()" onClick={() => handleInput(")")} styles="font-bold" isActive={activeKey === "(" || activeKey === ")"} />

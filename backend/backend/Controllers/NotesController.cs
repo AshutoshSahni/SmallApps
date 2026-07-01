@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class NotesController : ControllerBase
@@ -25,7 +26,6 @@ public class NotesController : ControllerBase
     }
 
     // GET: api/notes/5
-    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<Note>> GetNote(int id)
     {
@@ -48,6 +48,7 @@ public class NotesController : ControllerBase
     }
 
     // PUT: api/notes/5
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateNote(int id, Note updatedNote)
     {

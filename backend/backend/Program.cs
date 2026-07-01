@@ -85,7 +85,12 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/scalar/v1");
+    return Task.CompletedTask;
+});
+
 app.MapControllers();
 
 app.Run();

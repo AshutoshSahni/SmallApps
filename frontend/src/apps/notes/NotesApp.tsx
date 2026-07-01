@@ -13,31 +13,31 @@ import {
   CheckCircleIcon as CheckCircleSolid
 } from "@heroicons/react/16/solid";
 import { createNote, getNotes, deleteNote, updateNote } from "../../services/NotesService";
-
-
-interface Note {
-  id: number
-  title: string
-  content: string
-  createdAt: string
-}
-
+import type { Note } from "../../types/Note";
+import { AuthService } from "../../services/AuthService";
+import { useNavigate } from "react-router-dom";
 
 const NotesApp = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [note, setNote] = useState({ title: '', content: '' });
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNotes = async () => {
+
+      if(!AuthService.isAuthenticated()) {
+        alert("You are not authenticated. Please login to access notes.");
+        navigate('/', { replace: true });
+        return;
+      }
 
       try {
         const data = await getNotes();
         setNotes(data);
       } catch (error) {
         console.error(error);
-        setError("Something went wrong while fetching notes." + (error instanceof Error ? `: ${error.message}` : ''));
+        alert("Something went wrong while fetching notes." + (error instanceof Error ? `: ${error.message}` : ''));
       }
     };
     fetchNotes();
@@ -51,9 +51,11 @@ const NotesApp = () => {
       return;
     }
 
-    const newNote = {
+    const newNote: Note = {
+      id: 0,
       title: note.title,
       content: note.content,
+      createdAt: new Date().toISOString(),
     };
 
     try {
@@ -90,7 +92,10 @@ const NotesApp = () => {
 
   const handleSave = async (id: number) => {
     try {
-      await updateNote(id, notes.find(note => note.id === id) as { title: string, content: string });
+      const noteToUpdate = notes.find(note => note.id === id);
+      if (noteToUpdate) {
+        await updateNote(id, noteToUpdate);
+      }
       setEditingId(null);
     } catch (error) {
       console.error(error);

@@ -1,55 +1,42 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+import type { Note } from '../types/Note';
+import { BASE_URL } from './GlobalVariables';
 
+const API_URL = BASE_URL + 'Notes';
 
-//#region  GET ALL NOTES SERVICE
-export const getNotes = async () => {
-    const response = await fetch(BASE_URL);
-    if (!response.ok) {
-        throw new Error('Failed to fetch notes');
-    }
-    return await response.json();
-
-}
-//#endregion
-
-//#region CREATE NOTE SERVICE
-export const createNote = async (note: { title: string, content: string }) => {
-    const response = await fetch(BASE_URL, {
-        method: 'POST',
+async function responseHelper<T>(
+    method: string,
+    url: string,
+    message: string,
+    body: any = null
+): Promise<T> {
+    const response = await fetch(url, {
+        method,
         headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(note)
+        body: body ? JSON.stringify(body) : null,
     });
-    if (!response.ok) {
-        throw new Error('Failed to create note');
-    }
-    return await response.json();
-}
-//#endregion
 
-//#region DELETE NOTE SERVICE
-export const deleteNote = async (id: number) => {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-        method: 'DELETE'
-    });
     if (!response.ok) {
-        throw new Error('Failed to delete note');
+        throw new Error(message + ": " + await response.text());
     }
-}
-//#endregion
 
-//#region UPDATE NOTE SERVICE
-export const updateNote = async (id: number, note: { title: string, content: string }) => {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(note)
-    });
-    if (!response.ok) {
-        throw new Error('Failed to update note');
+    if (response.status === 204) {
+        return undefined as T;
     }
+
+    return await response.json() as T;
 }
-//#endregion
+
+export const getNotes = () =>
+    responseHelper<Note[]>("GET", API_URL, "Failed to fetch notes");
+
+export const createNote = (note: Note) =>
+    responseHelper<Note>("POST", API_URL, "Failed to create note", note);
+
+export const updateNote = (id: number, note: Note) =>
+    responseHelper<void>("PUT", `${API_URL}/${id}`, "Failed to update note", note);
+
+export const deleteNote = (id: number) =>
+    responseHelper<void>("DELETE", `${API_URL}/${id}`, "Failed to delete note");

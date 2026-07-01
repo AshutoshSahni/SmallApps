@@ -1,4 +1,5 @@
 interface ButtonProps {
+    type?: 'button' | 'submit' | 'reset',
     label: string,
     styles?: string,
     onClick?: () => void,
@@ -6,7 +7,7 @@ interface ButtonProps {
     disabled?: boolean
 }
 
-export default function Button({ label, styles, onClick, isActive, disabled }: ButtonProps) {
+export default function Button({ type, label, styles, onClick, isActive, disabled }: ButtonProps) {
 
     const activeStyles =
         `active:bg-(--pallete-color-1)
@@ -17,8 +18,9 @@ export default function Button({ label, styles, onClick, isActive, disabled }: B
             active:font-bold`;
 
     return (
-        <button type="button" disabled={disabled} className={`
+        <button type={type || "button"} disabled={disabled} className={`
             px-4 py-2
+            w-full
             rounded-sm
             shadow-normal
             dark:shadow-glow
